@@ -1,13 +1,13 @@
 # Demo Script (2-3 Minutes)
 
 ## 1) Start Services
-"I start the mock streaming API and web app locally."
+"I start the streaming API and web app locally."
 ```
 npm run dev
 ```
 
 ## 2) Run Smoke Tests
-"In a second terminal I run the deterministic smoke suite."
+"In a second terminal I run the smoke suite."
 ```
 npm run test:smoke
 ```

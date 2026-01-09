@@ -1,7 +1,7 @@
 # Streaming QA Automation Framework
 
 ## Overview
-This repo is a portfolio-grade streaming QA framework that simulates a real-world music client while keeping everything generic. It demonstrates how to validate a streaming experience across API, UI, playback truth checks, and telemetry without relying on proprietary systems.
+This repo is a streaming QA framework meant to be shared. It validates API, UI, playback truth checks, and telemetry without any proprietary systems or data.
 
 ## Why This Architecture
 Streaming quality is multi-layered. A UI can look healthy while playback never starts or telemetry never fires. This framework validates:
@@ -13,8 +13,8 @@ Streaming quality is multi-layered. A UI can look healthy while playback never s
 ## What’s Included
 - Mock streaming web app (Vite + React + TypeScript)
 - Mock streaming API (Node + Express + TypeScript)
-- Playwright test framework with POMs, fixtures, and Zod schemas
-- Observability artifacts (console, network, metrics, traces/videos on failure)
+- Playwright tests with POMs, fixtures, and Zod schemas
+- Debug artifacts (console, network, metrics, traces/videos on failure)
 - CI pipeline with smoke vs full suite separation
 
 ## Repository Layout
@@ -48,7 +48,7 @@ npm run test:smoke
 ```
 
 ## How To Run Tests
-- Smoke (fast, deterministic): `npm run test:smoke`
+- Smoke (fast, stable): `npm run test:smoke`
 - Full suite: `npm run test`
 - API only: `npm run test:api`
 - UI only: `npm run test:ui`
@@ -61,7 +61,7 @@ npm run test:smoke
 - **Artifacts:** Playwright report, traces/videos (on failure), plus `test-results/**/artifacts`
 
 ## Determinism & Anti-Flake Approach
-- Mock mode with stable catalog ordering and deterministic “Now Playing”
+- Mock mode with stable catalog ordering and a fixed “Now Playing” default
 - Mock-only reset endpoint (`POST /__test/reset`) called before each test
 - No hard sleeps; waits are tied to UI state, playback readiness, or network calls
 - Stable locators via `data-testid`

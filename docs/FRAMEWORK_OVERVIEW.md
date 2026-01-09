@@ -1,7 +1,7 @@
 # Streaming QA Automation Framework - Technical Overview
 
 ## Purpose
-This repository is a reference-grade streaming QA framework built around a mock web client and API. The goal is to demonstrate how a streaming engineering org can validate reliability, playback truth, and telemetry integrity while keeping tests deterministic and CI-friendly.
+This repository is a streaming QA framework built around a mock web client and API. It shows how a streaming engineering org can validate reliability, playback truth, and telemetry integrity with tests that stay repeatable in CI.
 
 ## Test Layers (Pyramid)
 - **API/Contract:** Zod schemas validate backend payloads and reject invalid requests early.
