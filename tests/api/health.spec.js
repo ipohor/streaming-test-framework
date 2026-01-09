@@ -1,5 +1,5 @@
-import { test, expect } from "../../src/fixtures/testFixtures";
-import { healthSchema } from "../../src/utils/schemas";
+const { test, expect } = require("../../src/fixtures/testFixtures");
+const { healthSchema } = require("../../src/utils/schemas");
 
 test("health endpoint returns ok @api @contract", async ({ apiClient }) => {
   const response = await apiClient.getHealth();

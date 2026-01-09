@@ -20,7 +20,7 @@ npx playwright show-report
 
 ## 4) Walk Through Playback Truth Check
 "Here is the playback test. It validates TTFA, checks that audio currentTime progresses, and confirms the playback session call and telemetry payload."
-- Highlight: `tests/playback/audio.playing.spec.ts`
+- Highlight: `tests/playback/audio.playing.spec.js`
 - Point out TTFA vs `TTFA_MS_MAX` and readyState checks
 
 ## 5) Show Artifacts

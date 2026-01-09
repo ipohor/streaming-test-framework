@@ -1,7 +1,8 @@
-import fs from "fs/promises";
-import path from "path";
-import { env } from "../config/env";
-import { AUTH_DIR, getStorageStatePath } from "./storageState";
+const fs = require("fs/promises");
+const path = require("path");
+
+const { env } = require("../config/env");
+const { AUTH_DIR, getStorageStatePath } = require("./storageState");
 
 const globalSetup = async () => {
   await fs.mkdir(AUTH_DIR, { recursive: true });
@@ -28,10 +29,11 @@ const globalSetup = async () => {
         await fs.access(storagePath);
         return;
       } catch {
+        await fs.mkdir(path.dirname(storagePath), { recursive: true });
         await fs.writeFile(storagePath, JSON.stringify(storageState, null, 2), "utf-8");
       }
     })
   );
 };
 
-export default globalSetup;
+module.exports = globalSetup;

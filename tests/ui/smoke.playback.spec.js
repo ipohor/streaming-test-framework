@@ -1,8 +1,8 @@
-import { test, expect } from "../../src/fixtures/testFixtures";
-import { LoginPage } from "../../src/pages/loginPage";
-import { PlayerPage } from "../../src/pages/playerPage";
-import { expectAudioElement } from "../../src/utils/playback";
-import { getTestUser } from "../../src/fixtures/users";
+const { test, expect } = require("../../src/fixtures/testFixtures");
+const { LoginPage } = require("../../src/pages/loginPage");
+const { PlayerPage } = require("../../src/pages/playerPage");
+const { expectAudioElement } = require("../../src/utils/playback");
+const { getTestUser } = require("../../src/fixtures/users");
 
 test("can sign in and start playback @smoke @ui", async ({ page }) => {
   const loginPage = new LoginPage(page);

@@ -1,15 +1,17 @@
-import { Page } from "@playwright/test";
-
-export class LoginPage {
-  constructor(private page: Page) {}
+class LoginPage {
+  constructor(page) {
+    this.page = page;
+  }
 
   async goto() {
     await this.page.goto("/login");
   }
 
-  async login(username: string, password: string) {
+  async login(username, password) {
     await this.page.getByTestId("username").fill(username);
     await this.page.getByTestId("password").fill(password);
     await this.page.getByTestId("sign-in").click();
   }
 }
+
+module.exports = { LoginPage };

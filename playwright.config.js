@@ -1,11 +1,10 @@
-import { defineConfig } from "@playwright/test";
-import dotenv from "dotenv";
+const dotenv = require("dotenv");
 
 dotenv.config();
 
 const webBaseUrl = process.env.WEB_BASE_URL || "http://localhost:5173";
 
-export default defineConfig({
+module.exports = {
   testDir: "./tests",
   timeout: 45_000,
   globalTimeout: 10 * 60_000,
@@ -20,7 +19,7 @@ export default defineConfig({
     video: "retain-on-failure",
     actionTimeout: 10_000
   },
-  globalSetup: "./src/fixtures/global-setup.ts",
+  globalSetup: "./src/fixtures/global-setup.js",
   projects: [
     {
       name: "chromium",
@@ -31,4 +30,4 @@ export default defineConfig({
       use: { browserName: "webkit" }
     }
   ]
-});
+};

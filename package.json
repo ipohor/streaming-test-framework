@@ -10,7 +10,7 @@
     "test:ui": "playwright test tests/ui",
     "test:playback": "playwright test tests/playback",
     "report": "playwright show-report",
-    "lint": "eslint . --ext .ts,.tsx",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky install"

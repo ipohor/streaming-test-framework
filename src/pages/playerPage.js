@@ -1,7 +1,7 @@
-import { Page } from "@playwright/test";
-
-export class PlayerPage {
-  constructor(private page: Page) {}
+class PlayerPage {
+  constructor(page) {
+    this.page = page;
+  }
 
   async play() {
     await this.page.getByTestId("play").click();
@@ -31,3 +31,5 @@ export class PlayerPage {
     return this.page.getByTestId("audio");
   }
 }
+
+module.exports = { PlayerPage };

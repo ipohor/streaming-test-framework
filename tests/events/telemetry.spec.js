@@ -1,6 +1,6 @@
-import { authTest as test } from "../../src/fixtures/authFixtures";
-import { PlayerPage } from "../../src/pages/playerPage";
-import { expectEventCallWithType } from "../../src/utils/network";
+const { authTest: test } = require("../../src/fixtures/authFixtures");
+const { PlayerPage } = require("../../src/pages/playerPage");
+const { expectEventCallWithType } = require("../../src/utils/network");
 
 test("telemetry event is sent on like or skip @events @regression", async ({
   page,

@@ -1,14 +1,14 @@
-import { authTest as test, expect } from "../../src/fixtures/authFixtures";
-import { env } from "../../src/config/env";
-import { PlayerPage } from "../../src/pages/playerPage";
-import {
+const { authTest: test, expect } = require("../../src/fixtures/authFixtures");
+const { env } = require("../../src/config/env");
+const { PlayerPage } = require("../../src/pages/playerPage");
+const {
   expectAudioElement,
   expectAudioPlaying,
   expectPlaybackProgress,
   expectPlaybackProgressing,
   measureTTFA
-} from "../../src/utils/playback";
-import { expectEventCallWithType, expectPlaybackSessionCall } from "../../src/utils/network";
+} = require("../../src/utils/playback");
+const { expectEventCallWithType, expectPlaybackSessionCall } = require("../../src/utils/network");
 
 test("audio plays and progresses with acceptable TTFA @playback @perf", async ({
   page,

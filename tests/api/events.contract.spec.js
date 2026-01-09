@@ -1,6 +1,6 @@
-import { test, expect } from "../../src/fixtures/testFixtures";
-import { eventPayloadSchema } from "../../src/utils/schemas";
-import { buildCatalogItem } from "../../src/fixtures/catalogBuilder";
+const { test, expect } = require("../../src/fixtures/testFixtures");
+const { eventPayloadSchema } = require("../../src/utils/schemas");
+const { buildCatalogItem } = require("../../src/fixtures/catalogBuilder");
 
 const sampleTrack = buildCatalogItem(1);
 

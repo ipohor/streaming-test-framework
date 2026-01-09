@@ -1,5 +1,5 @@
-import { test, expect } from "../../src/fixtures/testFixtures";
-import { catalogSchema } from "../../src/utils/schemas";
+const { test, expect } = require("../../src/fixtures/testFixtures");
+const { catalogSchema } = require("../../src/utils/schemas");
 
 test("catalog schema matches contract @api @contract", async ({ apiClient }) => {
   const response = await apiClient.getCatalog();

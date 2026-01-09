@@ -1,17 +1,12 @@
-import { Page } from "@playwright/test";
+const defaultAllowlist = ["Failed to load resource"];
 
-type ConsoleEntry = {
-  type: string;
-  text: string;
-};
+class ConsoleTracker {
+  constructor(page, allowlist = defaultAllowlist) {
+    this.page = page;
+    this.allowlist = allowlist;
+    this.entries = [];
+    this.errors = [];
 
-const defaultAllowlist = ["Failed to load resource"]; // allowlist benign dev errors
-
-export class ConsoleTracker {
-  private entries: ConsoleEntry[] = [];
-  private errors: ConsoleEntry[] = [];
-
-  constructor(private page: Page, private allowlist: string[] = defaultAllowlist) {
     this.page.on("console", (message) => {
       const entry = { type: message.type(), text: message.text() };
       this.entries.push(entry);
@@ -29,7 +24,7 @@ export class ConsoleTracker {
     });
   }
 
-  private isAllowed(message: string) {
+  isAllowed(message) {
     return this.allowlist.some((allowed) => message.includes(allowed));
   }
 
@@ -41,3 +36,5 @@ export class ConsoleTracker {
     return [...this.errors];
   }
 }
+
+module.exports = { ConsoleTracker };

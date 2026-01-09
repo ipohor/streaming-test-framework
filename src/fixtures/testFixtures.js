@@ -1,27 +1,54 @@
-import { test as base, expect, request } from "@playwright/test";
-import fs from "fs/promises";
-import path from "path";
-import { env } from "../config/env";
-import { ApiClient } from "../clients/apiClient";
-import { ConsoleTracker } from "../utils/console";
-import { createNetworkRecorder, NetworkRecorder } from "../utils/network";
-import { MetricsCollector } from "../utils/metrics";
+const { test: base, expect, request } = require("@playwright/test");
+const fs = require("fs/promises");
+const path = require("path");
 
-type Fixtures = {
-  apiClient: ApiClient;
-  apiToken: string;
-  networkRecorder: NetworkRecorder;
-  consoleTracker: ConsoleTracker;
-  metrics: MetricsCollector;
+const { env } = require("../config/env");
+const { ApiClient } = require("../clients/apiClient");
+const { ConsoleTracker } = require("../utils/console");
+const { createNetworkRecorder } = require("../utils/network");
+const { MetricsCollector } = require("../utils/metrics");
+
+const sanitize = (value) => value.replace(/[^a-z0-9-_]+/gi, "_").slice(0, 100);
+
+const writeArtifact = async (filePath, data) => {
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf-8");
 };
 
-export const test = base.extend<Fixtures>({
+const writeTextArtifact = async (filePath, data) => {
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  await fs.writeFile(filePath, data, "utf-8");
+};
+
+const waitForApiReady = async (attempts = 5, delayMs = 500) => {
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const apiContext = await request.newContext({ baseURL: env.apiBaseUrl });
+    try {
+      const response = await apiContext.get("/health");
+      if (response.ok()) {
+        await apiContext.dispose();
+        return;
+      }
+    } catch {
+      // keep retrying until attempts exhausted
+    } finally {
+      await apiContext.dispose();
+    }
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+  }
+
+  throw new Error(
+    `API not reachable at ${env.apiBaseUrl}. Start services with 'npm run dev' in another terminal.`
+  );
+};
+
+const test = base.extend({
   apiToken: [
     async ({}, use) => {
       const apiContext = await request.newContext({ baseURL: env.apiBaseUrl });
       const client = new ApiClient(apiContext);
       const response = await client.login(env.testUsername, env.testPassword);
-      const body = (await response.json()) as { token: string };
+      const body = await response.json();
       await apiContext.dispose();
       await use(body.token);
     },
@@ -52,42 +79,6 @@ export const test = base.extend<Fixtures>({
     await use(new MetricsCollector());
   }
 });
-
-export { expect } from "@playwright/test";
-
-const sanitize = (value: string) => value.replace(/[^a-z0-9-_]+/gi, "_").slice(0, 100);
-
-const writeArtifact = async (filePath: string, data: unknown) => {
-  await fs.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf-8");
-};
-
-const writeTextArtifact = async (filePath: string, data: string) => {
-  await fs.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.writeFile(filePath, data, "utf-8");
-};
-
-const waitForApiReady = async (attempts = 5, delayMs = 500) => {
-  for (let attempt = 1; attempt <= attempts; attempt += 1) {
-    const apiContext = await request.newContext({ baseURL: env.apiBaseUrl });
-    try {
-      const response = await apiContext.get("/health");
-      if (response.ok()) {
-        await apiContext.dispose();
-        return;
-      }
-    } catch {
-      // keep retrying until attempts exhausted
-    } finally {
-      await apiContext.dispose();
-    }
-    await new Promise((resolve) => setTimeout(resolve, delayMs));
-  }
-
-  throw new Error(
-    `API not reachable at ${env.apiBaseUrl}. Start services with 'npm run dev' in another terminal.`
-  );
-};
 
 test.beforeEach(async () => {
   if (env.mode !== "mock") return;
@@ -134,3 +125,5 @@ test.afterEach(async ({ networkRecorder, consoleTracker, metrics }, testInfo) =>
 
   expect(consoleErrors, "Console errors detected").toEqual([]);
 });
+
+module.exports = { test, expect };

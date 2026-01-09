@@ -1,5 +1,5 @@
-import { test, expect } from "../../src/fixtures/testFixtures";
-import { playbackSessionSchema } from "../../src/utils/schemas";
+const { test, expect } = require("../../src/fixtures/testFixtures");
+const { playbackSessionSchema } = require("../../src/utils/schemas");
 
 const deviceId = "test-device";
 

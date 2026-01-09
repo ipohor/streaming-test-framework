@@ -1,29 +1,11 @@
-import { Page, expect } from "@playwright/test";
+const { expect } = require("@playwright/test");
 
-export type NetworkRecord = {
-  url: string;
-  method: string;
-  status?: number;
-  requestBody?: unknown;
-  responseBody?: unknown;
-};
-
-export type NetworkRecorder = {
-  records: NetworkRecord[];
-  summary: () => { total: number; endpoints: Record<string, number> };
-};
-
-type RecorderOptions = {
-  maxRecords?: number;
-  maxBodySize?: number;
-};
-
-const truncate = (value: string, maxSize: number) => {
+const truncate = (value, maxSize) => {
   if (value.length <= maxSize) return value;
   return `${value.slice(0, maxSize)}...truncated`;
 };
 
-const clampBody = (body: unknown, maxSize: number) => {
+const clampBody = (body, maxSize) => {
   if (body === undefined) return undefined;
   if (typeof body === "string") return truncate(body, maxSize);
   try {
@@ -34,12 +16,12 @@ const clampBody = (body: unknown, maxSize: number) => {
   }
 };
 
-export const createNetworkRecorder = (page: Page, options: RecorderOptions = {}): NetworkRecorder => {
+const createNetworkRecorder = (page, options = {}) => {
   const { maxRecords = 200, maxBodySize = 1000 } = options;
-  const records: NetworkRecord[] = [];
+  const records = [];
 
   page.on("request", (request) => {
-    const entry: NetworkRecord = {
+    const entry = {
       url: request.url(),
       method: request.method()
     };
@@ -78,25 +60,27 @@ export const createNetworkRecorder = (page: Page, options: RecorderOptions = {})
           acc.total += 1;
           return acc;
         },
-        { total: 0, endpoints: {} as Record<string, number> }
+        { total: 0, endpoints: {} }
       );
     }
   };
 };
 
-export const expectPlaybackSessionCall = async (recorder: NetworkRecorder) => {
+const expectPlaybackSessionCall = async (recorder) => {
   await expect
-    .poll(() => recorder.records.some((r) => r.url.includes("/playback/session")), { timeout: 5000 })
+    .poll(() => recorder.records.some((r) => r.url.includes("/playback/session")), {
+      timeout: 5000
+    })
     .toBeTruthy();
 };
 
-export const expectEventCallWithType = async (recorder: NetworkRecorder, eventType: string) => {
+const expectEventCallWithType = async (recorder, eventType) => {
   await expect
     .poll(
       () =>
         recorder.records.some((r) => {
           if (!r.url.includes("/events")) return false;
-          let body: { type?: string } | undefined;
+          let body;
           if (typeof r.requestBody === "string") {
             try {
               body = JSON.parse(r.requestBody);
@@ -104,11 +88,17 @@ export const expectEventCallWithType = async (recorder: NetworkRecorder, eventTy
               body = undefined;
             }
           } else {
-            body = r.requestBody as { type?: string } | undefined;
+            body = r.requestBody;
           }
           return body?.type === eventType;
         }),
       { timeout: 5000 }
     )
     .toBeTruthy();
+};
+
+module.exports = {
+  createNetworkRecorder,
+  expectPlaybackSessionCall,
+  expectEventCallWithType
 };

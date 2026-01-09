@@ -1,9 +1,11 @@
-import { env } from "../config/env";
+const { env } = require("../config/env");
 
-export const getTestUser = () => {
+const getTestUser = () => {
   return {
     username: env.testUsername,
     password: env.testPassword,
     userId: env.testUsername
   };
 };
+
+module.exports = { getTestUser };
