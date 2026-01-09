@@ -36,8 +36,8 @@ app.get("/catalog", (_req, res) => {
 });
 
 app.post("/playback/session", (req, res) => {
-  const body = req.body as { deviceId?: string; trackId?: string };
-  if (!body?.deviceId) {
+  const body = req.body || {};
+  if (!body.deviceId) {
     return res.status(400).json({ error: "deviceId required" });
   }
 
@@ -50,9 +50,9 @@ app.post("/playback/session", (req, res) => {
 });
 
 app.post("/events", (req, res) => {
-  const body = req.body as { type?: string; ts?: number; properties?: Record<string, unknown> };
+  const body = req.body || {};
   const allowedTypes = new Set(["PLAYBACK_START", "LIKE", "SKIP"]);
-  if (!body?.type || typeof body.ts !== "number" || !allowedTypes.has(body.type)) {
+  if (!body.type || typeof body.ts !== "number" || !allowedTypes.has(body.type)) {
     return res.status(400).json({ accepted: false });
   }
   res.json({ accepted: true });

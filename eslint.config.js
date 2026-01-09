@@ -1,5 +1,3 @@
-const tsParser = require("@typescript-eslint/parser");
-const tsPlugin = require("@typescript-eslint/eslint-plugin");
 const importPlugin = require("eslint-plugin-import");
 const reactPlugin = require("eslint-plugin-react");
 const reactHooksPlugin = require("eslint-plugin-react-hooks");
@@ -19,7 +17,6 @@ module.exports = [
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
     languageOptions: {
-      parser: tsParser,
       parserOptions: {
         ecmaVersion: "latest",
         sourceType: "module",
@@ -34,7 +31,6 @@ module.exports = [
       }
     },
     plugins: {
-      "@typescript-eslint": tsPlugin,
       import: importPlugin,
       react: reactPlugin,
       "react-hooks": reactHooksPlugin

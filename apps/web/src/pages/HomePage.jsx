@@ -4,16 +4,10 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
 const mode = import.meta.env.VITE_MODE || "mock";
 const isMockMode = mode === "mock";
 
-type CatalogItem = {
-  id: string;
-  title: string;
-  type: string;
-};
-
 const HomePage = () => {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const mockPlaybackIntervalRef = useRef<number | null>(null);
-  const [catalog, setCatalog] = useState<CatalogItem[]>([]);
+  const audioRef = useRef(null);
+  const mockPlaybackIntervalRef = useRef(null);
+  const [catalog, setCatalog] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [status, setStatus] = useState("Paused");
   const [playbackReady, setPlaybackReady] = useState(false);
@@ -24,7 +18,7 @@ const HomePage = () => {
   useEffect(() => {
     const loadCatalog = async () => {
       const response = await fetch(`${apiBaseUrl}/catalog`);
-      const data = (await response.json()) as { items: CatalogItem[] };
+      const data = await response.json();
       setCatalog(data.items || []);
       setActiveIndex(0);
     };
@@ -40,7 +34,7 @@ const HomePage = () => {
     };
   }, []);
 
-  const postEvent = async (type: "PLAYBACK_START" | "LIKE" | "SKIP", properties?: Record<string, unknown>) => {
+  const postEvent = async (type, properties) => {
     await fetch(`${apiBaseUrl}/events`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -65,7 +59,7 @@ const HomePage = () => {
     }
   };
 
-  const startMockPlayback = (audio: HTMLAudioElement) => {
+  const startMockPlayback = (audio) => {
     stopMockPlayback();
     setMockPlaybackActive(true);
     setPlaybackReady(true);
@@ -74,7 +68,7 @@ const HomePage = () => {
     }, 500);
   };
 
-  const startAudio = async (audio: HTMLAudioElement, url: string, delayMs = 0) => {
+  const startAudio = async (audio, url, delayMs = 0) => {
     if (audio.src !== url) {
       audio.src = url;
     }
@@ -91,7 +85,6 @@ const HomePage = () => {
       setPlaybackReady(true);
       return;
     } catch {
-      // Retry in a muted state to bypass autoplay restrictions.
       try {
         audio.muted = true;
         await audio.play();
@@ -107,7 +100,7 @@ const HomePage = () => {
     }
   };
 
-  const startPlaybackSession = async (trackId?: string) => {
+  const startPlaybackSession = async (trackId) => {
     const userId = localStorage.getItem("mockUserId") || "test_user";
     const response = await fetch(`${apiBaseUrl}/playback/session`, {
       method: "POST",
@@ -121,7 +114,7 @@ const HomePage = () => {
     if (!response.ok) {
       throw new Error("Playback session failed.");
     }
-    return (await response.json()) as { streamUrl: string; slowStartMs?: number };
+    return response.json();
   };
 
   const handlePlay = async () => {

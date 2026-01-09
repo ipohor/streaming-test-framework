@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
@@ -7,9 +7,9 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setError(null);
 
@@ -24,12 +24,12 @@ const LoginPage = () => {
         throw new Error("Unable to sign in.");
       }
 
-      const data = (await response.json()) as { token: string };
+      const data = await response.json();
       localStorage.setItem("mockToken", data.token);
       localStorage.setItem("mockUserId", username);
       navigate("/home");
     } catch (err) {
-      setError((err as Error).message);
+      setError(err.message);
     }
   };
 

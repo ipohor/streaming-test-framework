@@ -11,8 +11,8 @@ Streaming quality is multi-layered. A UI can look healthy while playback never s
 - **Telemetry/events** to ensure analytics and engagement signals are emitted
 
 ## What’s Included
-- Mock streaming web app (Vite + React + TypeScript)
-- Mock streaming API (Node + Express + TypeScript)
+- Mock streaming web app (Vite + React + JavaScript)
+- Mock streaming API (Node + Express + JavaScript)
 - Playwright tests with POMs, fixtures, and Zod schemas
 - Debug artifacts (console, network, metrics, traces/videos on failure)
 - CI pipeline with smoke vs full suite separation
@@ -20,8 +20,8 @@ Streaming quality is multi-layered. A UI can look healthy while playback never s
 ## Repository Layout
 ```
 apps/
-  api/               # Mock streaming API (Express + TS)
-  web/               # Mock web app (Vite + React + TS)
+  api/               # Mock streaming API (Express + JS)
+  web/               # Mock web app (Vite + React + JS)
 src/
   clients/           # API client wrappers
   config/            # env config
