@@ -1,0 +1,9 @@
+node_modules
+apps/*/node_modules
+apps/*/dist
+dist
+playwright-report
+test-results
+.playwright
+.env
+.DS_Store

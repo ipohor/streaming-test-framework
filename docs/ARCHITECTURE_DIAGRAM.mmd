@@ -1,0 +1,46 @@
+flowchart LR
+  subgraph Web_App[Mock Streaming Web App]
+    UI[UI Actions]
+    Player[Playback UI]
+    Audio[HTMLAudioElement]
+  end
+
+  subgraph API[Mock Streaming API]
+    Auth[/auth/login/]
+    Catalog[/catalog/]
+    Session[/playback/session/]
+    Events[/events/]
+    Reset[/__test/reset (mock only)/]
+  end
+
+  subgraph Tests[Playwright Tests]
+    API_Tests[API + Contract Tests]
+    UI_Tests[UI + Smoke Tests]
+    Playback_Tests[Playback Truth Checks]
+    Events_Tests[Telemetry Tests]
+  end
+
+  subgraph Artifacts[Observability Artifacts]
+    Console[console-*.log/json]
+    Network[network-*.json]
+    Metrics[metrics-*.json]
+    Report[Playwright Report]
+  end
+
+  UI -->|login, catalog fetch| Auth
+  UI --> Catalog
+  UI -->|start playback| Session
+  Session -->|streamUrl| Audio
+  UI -->|like/skip/playback_start| Events
+
+  API_Tests --> Auth
+  API_Tests --> Catalog
+  API_Tests --> Session
+  API_Tests --> Events
+
+  UI_Tests --> UI
+  Playback_Tests --> Audio
+  Events_Tests --> Events
+
+  Tests --> Artifacts
+  Reset --> Tests

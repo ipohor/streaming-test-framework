@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  smoke-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Prepare env
+        run: cp .env.example .env
+
+      - name: Start API
+        run: |
+          nohup npm --prefix apps/api run dev > api.log 2>&1 &
+          echo $! > api.pid
+
+      - name: Start Web
+        run: |
+          nohup npm --prefix apps/web run dev > web.log 2>&1 &
+          echo $! > web.pid
+
+      - name: Wait for services
+        run: npx wait-on http://localhost:3001/health http://localhost:5173/login
+
+      - name: Run smoke suite
+        run: npx playwright test --project chromium -g @smoke
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-smoke
+          path: |
+            playwright-report
+            test-results
+            test-results/**/artifacts
+          retention-days: 7
+      - name: Stop services
+        if: always()
+        run: |
+          if [ -f api.pid ]; then kill $(cat api.pid) || true; fi
+          if [ -f web.pid ]; then kill $(cat web.pid) || true; fi
+  full-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Prepare env
+        run: cp .env.example .env
+
+      - name: Start API
+        run: |
+          nohup npm --prefix apps/api run dev > api.log 2>&1 &
+          echo $! > api.pid
+
+      - name: Start Web
+        run: |
+          nohup npm --prefix apps/web run dev > web.log 2>&1 &
+          echo $! > web.pid
+
+      - name: Wait for services
+        run: npx wait-on http://localhost:3001/health http://localhost:5173/login
+
+      - name: Run full suite
+        run: npx playwright test --project ${{ matrix.browser }}
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: |
+            playwright-report
+            test-results
+            test-results/**/artifacts
+          retention-days: 7
+      - name: Stop services
+        if: always()
+        run: |
+          if [ -f api.pid ]; then kill $(cat api.pid) || true; fi
+          if [ -f web.pid ]; then kill $(cat web.pid) || true; fi
